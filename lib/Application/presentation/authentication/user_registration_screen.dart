@@ -1,12 +1,14 @@
+import 'package:fix_my_nest_user/Application/presentation/authentication/user_login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../Domain/Models/authentication/registration_model.dart';
 import '../../../core/padding.dart';
 import '../../Business_logic/authentication/bloc/auth_bloc.dart';
 import '../common_widget/tittles.dart';
 import 'Wigets/button1.dart';
-import 'Wigets/right_text.dart';
 import 'Wigets/text_with_link.dart';
 import 'Wigets/textfield_and_tittle.dart';
+import '../home/home.dart';
 
 class UserRegistrationScreen extends StatelessWidget {
   const UserRegistrationScreen({super.key});
@@ -23,6 +25,9 @@ class UserRegistrationScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * .1,
+                ),
                 const Tittles(tittle: "Register here..."),
                 TextFirmFieldWithTitle(
                   textFeildTittle: "Full Name",
@@ -75,25 +80,71 @@ class UserRegistrationScreen extends StatelessWidget {
                     return null;
                   },
                 ),
-                const TextRightWidget(rightText: "Verify Phone Number?"),
-                Button1(
-                    buttonText: "Register",
-                    buttonPressed: () {
-                      final bool val = context
-                          .read<AuthBloc>()
-                          .registerKey
-                          .currentState!
-                          .validate();
-                      if (val) {
-                        print("Registration Success");
-                      } else {
-                        print("Not Correct");
-                        return;
-                      }
-                    }),
-                const TextWithLink(
+                // TextRightWidget(
+                //     rightText: "Verify Phone Number?",
+                //     navContext: context,
+                //     buttonFunction:
+                //    UserPhNoVerifyScreen()),
+                BlocConsumer<AuthBloc, AuthState>(listener: (context, state) {
+                  if (state is AuthSuccess) {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const HomeScreen()));
+                  }
+                }, builder: (context, state) {
+                  if (state is AuthLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  return Button1(
+                      buttonText: "Register",
+                      buttonPressed: () {
+                        final bool val = context
+                            .read<AuthBloc>()
+                            .registerKey
+                            .currentState!
+                            .validate();
+                        if (val) {
+                          // print("Registration............. Success");
+                          context.read<AuthBloc>().add(RegistrationEvent(
+                              registration: RegistrationModel(
+                                userName: context
+                                    .read<AuthBloc>()
+                                    .userNameCotroller
+                                    .text
+                                    .trim(),
+                                userEmail: context
+                                    .read<AuthBloc>()
+                                    .emailController
+                                    .text
+                                    .trim(),
+                                userPassword: context
+                                    .read<AuthBloc>()
+                                    .passwordController
+                                    .text
+                                    .trim(),
+                                userPhoneNumber: int.parse(context
+                                    .read<AuthBloc>()
+                                    .phoneNumController
+                                    .text
+                                    .trim()),
+                              ),
+                              context: context));
+                        } else {
+                          print("Not Correct");
+                          return;
+                        }
+                      });
+                }),
+                TextWithLink(
                     bottomText: "Already have an account? then,",
-                    linkText: "Sign in"),
+                    linkText: "Sign in",
+                    navContext: context,
+                    buttonFunction: const UserLoginScreen()),
+                //  Navigator.of(context).push(MaterialPageRoute(
+                // builder: (context) => const UserLoginScreen())).toString(),),
               ],
             ),
           ),

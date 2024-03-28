@@ -1,7 +1,10 @@
+import 'package:fix_my_nest_user/Application/presentation/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'Application/Business_logic/authentication/bloc/auth_bloc.dart';
+import 'Application/presentation/authentication/user_login_screen.dart';
 import 'Application/presentation/authentication/user_registration_screen.dart';
 import 'firebase_options.dart';
 
@@ -46,7 +49,11 @@ class MyApp extends StatelessWidget {
               ColorScheme.fromSeed(seedColor: Color.fromARGB(183, 2, 147, 67)),
           useMaterial3: true,
         ),
-        home: UserRegistrationScreen(),
+        home:
+            FirebaseAuth.instance.currentUser?.uid == null
+                ? UserLoginScreen()
+                :
+            HomeScreen(),
       ),
     );
   }

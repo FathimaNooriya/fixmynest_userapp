@@ -1,16 +1,19 @@
-
 import 'package:flutter/material.dart';
 import '../../../../core/color_and_font/color_and_font.dart';
 import '../../../../core/padding.dart';
 
 class TextWithLink extends StatelessWidget {
-  const TextWithLink({
+  TextWithLink({
     super.key,
     required this.bottomText,
     required this.linkText,
+    required this.buttonFunction,
+    required this.navContext,
   });
   final String bottomText;
   final String linkText;
+  final Widget buttonFunction;
+  BuildContext navContext;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -22,7 +25,10 @@ class TextWithLink extends StatelessWidget {
             style: ColorAndFont.Normal_TEXT,
           ),
           TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (navContext) => buttonFunction));
+              },
               child: Text(
                 linkText,
                 style: ColorAndFont.Normal_TEXT_BOLD,
